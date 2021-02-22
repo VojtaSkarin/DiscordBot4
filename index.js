@@ -776,7 +776,7 @@ function whatsnew(msg, params) {
 		function last() {
 			msg.channel.send('**WhatsNew v .2.17**' +
 			'\n\t__Bug fixes__' +
-			'\n\t\t:bulb: !module add už funguje, ikdyž není emoji plný počet' +
+			'\n\t\t:bulb: !module už funguje, ikdyž není emoji plný počet' +
 			'\n\t\t:bulb: !module new už používá správnou adresu');
 		}
 		
