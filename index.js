@@ -790,6 +790,7 @@ function whatsnew(msg, params) {
 		function last() {
 			msg.channel.send('**WhatsNew v .2.18**' +
 			'\n\t__Minor changes__' +
+			'\n\t\t⛏ Přidáno !access add_subcategory' +
 			'\n\t\t⛏ !access add_room nyní upravuje odpovídající tabulku předmětů');
 		}
 		
@@ -1242,6 +1243,20 @@ function access(msg, params) {
 		} else if (params[1] == 'remove_category') {
 			// Není potřeba
 			console.log('access remove_category není implementováno');
+		
+		} else if (cie(params[1], 'add_subcategory')) {
+			// !access add_subcategory 'category' 'code' 'subcategory'
+			
+			category = params[2]
+			code = params[3];
+			subcategory = params[4]
+			
+			channel = msg.guild.channels.cache.filter(ch => ch.name.startsWith('výběr'))
+				.find(ch => cie(ch.parent.name, category));
+			
+			channel.send('**' + code.toUpperCase() + ': ' +
+				subcategory[0].toUpperCase() +
+				subcategory.slice(1).replaceAll('-', ' ') + '**');
 			
 		} else if (params[1] == 'add_room') {
 			// !access add_room 'category' 'name'
@@ -1303,6 +1318,7 @@ function access(msg, params) {
 		} else if (params[1] == 'list_categories') {
 			msg.channel.send('**Monitorované kanály jsou:**\n\t' +
 				monitoredChannelsIDs.join('\n\t'));
+				
 		} else if (params[1] == 'send_table') {
 			// !access send_table *channel*
 			
