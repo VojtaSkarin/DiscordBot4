@@ -1304,7 +1304,7 @@ function access(msg, params) {
 			});
 			
 			names = names.filter(name => name.startsWith(subjectType))
-				.map(name => name.replaceAll('-', ' '));
+				.map(name => name.replace(/-/g, ' '));
 			tuples = zip(names, colors);
 			
 			newText = message.content.split('\n')[0] +
