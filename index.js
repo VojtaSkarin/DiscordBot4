@@ -1256,7 +1256,7 @@ function access(msg, params) {
 			
 			channel.send('**' + code.toUpperCase() + ': ' +
 				subcategory[0].toUpperCase() +
-				subcategory.slice(1).replaceAll('-', ' ') + '**');
+				subcategory.slice(1).replace(/-/g, ' ') + '**');
 			
 		} else if (params[1] == 'add_room') {
 			// !access add_room 'category' 'name'
