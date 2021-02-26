@@ -220,6 +220,20 @@ client.on('messageReactionRemove', (reaction, user) => {
 	}
 });
 
+function cie(a, b) {
+	return a.toLowerCase() == b.toLowerCase();
+}
+
+function zip(a, b) {
+	if (a.length > b.length) {
+		throw 'Zip: First array is longer, then second one!';
+	}
+	return a.map((value, index) => {
+		//console.log(value, index);
+		return [value, b[index]];
+	});
+}
+
 monitoredChannelsIDs = []
 
 // Cashování zpráv, na kterých probíhá výběr předmětů, her...
@@ -774,16 +788,22 @@ function whatsnew(msg, params) {
 	msg.delete().then(() =>
 	{
 		function last() {
-			msg.channel.send('**WhatsNew v .2.17**' +
+			msg.channel.send('**WhatsNew v .2.18**' +
+			'\n\t__Minor changes__' +
+			'\n\t\t⛏ !access add_room nyní upravuje odpovídající tabulku předmětů' +
 			'\n\t__Bug fixes__' +
-			'\n\t\t:bulb: !module už funguje, ikdyž není emoji plný počet' +
-			'\n\t\t:bulb: !module new už používá správnou adresu');
+			'\n\t\t:bulb: ');
 		}
 		
 		if (params.length == 1) {
 			last();
 		} else if (params.length == 2 && params[1] == 'all') {
 			last();
+			
+			msg.channel.send('**WhatsNew v .2.17**' +
+			'\n\t__Bug fixes__' +
+			'\n\t\t:bulb: !module už funguje, ikdyž není emoji plný počet' +
+			'\n\t\t:bulb: !module new už používá správnou adresu');
 			
 			msg.channel.send('**WhatsNew v .2.16**' +
 			'\n\t__Major changes__' +
@@ -1220,14 +1240,68 @@ function access(msg, params) {
 			fs.appendFile(monitored_path, '\n' + ch_id, () => {});
 			msg.guild.channels.cache.find(ch => ch.name == params[2])
 				.fetch({ limit: 20 });
+				
 		} else if (params[1] == 'remove_category') {
 			// Není potřeba
 			console.log('access remove_category není implementováno');
+			
 		} else if (params[1] == 'add_room') {
+			// !access add_room 'category' 'name'
+			
+			category = params[2];
+			name = params[3];
+			
+			names = msg.guild.channels.cache.filter(ch => ch.type == 'text')
+				.filter(ch => cie(ch.parent.name, category))
+				.map(ch => ch.name);
+			names.push(name);
+			names.sort();
+			index = names.lastIndexOf(name);
+			
 			msg.guild.channels.create(params[3], {
 				type: 'text',
-				parent: msg.guild.channels.cache.find(ch => ch.name == params[2])
+				parent: msg.guild.channels.cache.find(ch => cie(ch.name, params[2])),
+				permissionOverwrites: [
+					{
+						id: msg.guild.roles.cache.find(r => r.name == '@everyone'),
+						deny: [
+							'CREATE_INSTANT_INVITE',
+							'ADD_REACTIONS',
+							'VIEW_CHANNEL',,
+							'SEND_MESSAGES',
+							'SEND_TTS_MESSAGES',
+							'EMBED_LINKS',
+							'ATTACH_FILES',
+							'READ_MESSAGE_HISTORY',
+							'MENTION_EVERYONE',
+							'USE_EXTERNAL_EMOJIS',
+						]
+					}
+				],
+				position: index
 			});
+			
+			subjectType = name.slice(0, 2);
+			
+			channel = msg.guild.channels.cache.find(ch => {
+				return ch.name.startsWith('výběr') && cie(category, ch.parent.name);
+			});
+			message = channel.messages.cache.find(m => {
+				return cie(m.content.substring(2, 4), subjectType);
+			});
+			
+			names = names.filter(name => name.startsWith(subjectType))
+				.map(name => name.replaceAll('-', ' '));
+			tuples = zip(names, colors);
+			
+			newText = message.content.split('\n')[0] +
+				tuples.reduce((acc, value) => {
+					return acc + '\n\t' + value[1] + ' `' + value[0] + '`';
+				}, '');
+			
+			message.edit(newText);			
+			colors.slice(0, names.length).forEach(c => message.react(c));
+			
 		} else if (params[1] == 'list_categories') {
 			msg.channel.send('**Monitorované kanály jsou:**\n\t' +
 				monitoredChannelsIDs.join('\n\t'));
@@ -1306,16 +1380,17 @@ function access_reaction(reaction, user, mode) {
 	*/
 	
 	emoji = reaction.emoji.toString();
+	
 	rows = reaction.message.content.split('\n\t').slice(1);
 	row = rows.find(row => {
 		return row.split(' ')[0] == emoji;
-	});
-	
+	});	
 	index = row.indexOf('`');
-	channel_code = row.substring(index + 1, index + 6).toLowerCase()
+	
+	channelCode = row.substring(index + 1, index + 6).toLowerCase()
 		.replace(' ', '-');
 	channel = reaction.message.guild.channels.cache.find(ch =>
-		ch.name.startsWith(channel_code));
+		ch.name.startsWith(channelCode));
 		
 	if (mode) {
 		channel.updateOverwrite(user,
@@ -1353,77 +1428,7 @@ function imback(msg, params) {
 }
 
 async function log(msg) {
-	//console.log(msg.author);
-	//console.log(msg.member.roles.cache.has('710427377024630895'));
-	//console.log(games);
-	
-	//msg.member.roles.add
-	/*
-	//console.log(msg.guild.channels);
-	console.log(msg.guild.channels.cache.find(ch => ch.name == 'Games Kútik').name);
-	channel = msg.guild.channels.cache.find(ch => ch.name == 'Games Kútik');
-	//channel.join().then(c => c.play(ytdl('https://www.youtube.com/watch?v=YnopHCL1Jk8')));
-	
-	song = await ytdl.getInfo('https://www.youtube.com/watch?v=A02s8omM_hI');
-
-	console.log(song.video_url);
-	
-	y = await channel.join();*/
-	/*y.play(ytdl('https://www.youtube.com/watch?v=iLBBRuVDOo4', {
-			quality: 'highest',
-			highWaterMark: 1048576}),{
-		bitrate: 'auto'
-	});*/
-	//y.play('C:\\Users\\Yunani\\Desktop\\Vicetone & Tony Igy - Astronomia.mp3');
-	
-	/*readStream = ytdl('https://www.youtube.com/watch?v=iLBBRuVDOo4', {
-			quality: 'highest',
-			highWaterMark: 1048576});
-	writeStream = fs.createWriteStream('file.mp3');
-	readStream.pipe(writeStream).on('finish', () => {
-		y.play('C:\\Users\\Yunani\\Desktop\\file.mp3'));*/
-	
-	//x = ytdl('http://www.youtube.com/watch?v=A02s8omM_hI');
-	//console.log(typeof(x));
-	/*x = new Map();
-	x.set('a', 1);
-	console.log(x.get('a'));
-	x.set('a', 2);
-	console.log(x.get('a'));*/
-	/*
-	msg.channel.send(new Discord.MessageAttachment(img_url + 'ranger_all.gif'));
-	
-	msg.channel.send('This is an embed', {
-  embed: {
-    thumbnail: {
-         url: 'attachment://file.jpg'
-      }
-   },
-   files: [{
-      attachment: 'entire/path/to/file.jpg',
-      name: 'file.jpg'
-   }]
-})*/
-   
-   //console.log('log');
-   //msg.channel.send('a**a**a');
-   //msg.guild.emojis.cache.get('736912288069714012').delete();
-   //msg.guild.emojis.create('./bbb.png', 'ccc');
-   //console.log(msg.guild.emojis.cache.get('736912288069714012'));
-   //console.log(msg.guild.emojis.cache.find(e => e.name == 'ccc').id);
-   //msg.guild.emojis.create('./emoji_data/Blown.png', 'Blown');
-   //console.log('done');
-   
-   //console.log(msg.guild.emojis.cache.find(e => e.name == 'Tarded'));
-   
-   //console.log(msg.guild.roles.cache.find(r => r.name == 'IT Student'));
-   //console.log(msg.attachments.forEach(att => att.url));
-   //console.log('a.b.c'.split('.').pop());
-   
-   //console.log(client.guilds.cache.first().channels.cache.find(ch => ch.name == 'bullshit-spam'));
-
-	console.log(msg.channel.parentID);
-	
+	//console.log(zip(['a','b','c'], [3,1,2]));
 }
 
 
