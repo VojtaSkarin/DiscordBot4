@@ -790,9 +790,7 @@ function whatsnew(msg, params) {
 		function last() {
 			msg.channel.send('**WhatsNew v .2.18**' +
 			'\n\t__Minor changes__' +
-			'\n\t\t⛏ !access add_room nyní upravuje odpovídající tabulku předmětů' +
-			'\n\t__Bug fixes__' +
-			'\n\t\t:bulb: ');
+			'\n\t\t⛏ !access add_room nyní upravuje odpovídající tabulku předmětů');
 		}
 		
 		if (params.length == 1) {
