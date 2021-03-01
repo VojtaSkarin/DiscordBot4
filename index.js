@@ -1501,18 +1501,22 @@ function breakOutRoomsReaction(reaction, user, mode) {
 		// výběr
 		return;
 	}
-		
+	
+	member = reaction.message.guild.members.cache
+		.find(m => m.id == user.id);
+	nickname = member ? member.nickname : user.username;
+	
 	if (mode) {
 		// mode = true
 			
 		channelNames = reaction.message.guild.channels.cache
 			.filter(ch => cie(ch.type, 'voice'))
 			.map(ch => ch.name);
-		channelNames.push(user.username);
+		channelNames.push(nickname);
 		channelNames.sort();
-		channelPosition = channelNames.indexOf(user.username);
+		channelPosition = channelNames.indexOf(nickname);
 		
-		reaction.message.guild.channels.create(user.username, {
+		reaction.message.guild.channels.create(nickname, {
 			type: 'voice',
 			parent: reaction.message.guild.channels.cache
 				.find(ch => cie(ch.name, 'hlasové kanály')),
@@ -1544,7 +1548,7 @@ function breakOutRoomsReaction(reaction, user, mode) {
 		// mode = false
 		
 		channel = reaction.message.guild.channels.cache
-			.find(ch => cie(ch.name, user.username));
+			.find(ch => cie(ch.name, nickname));
 		
 		if (channel != undefined) {
 			channel.delete();
