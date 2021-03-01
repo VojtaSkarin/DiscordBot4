@@ -1504,7 +1504,7 @@ function breakOutRoomsReaction(reaction, user, mode) {
 	
 	member = reaction.message.guild.members.cache
 		.find(m => m.id == user.id);
-	nickname = member ? member.nickname : user.username;
+	nickname = (member != null) ? member.nickname : user.username;
 	
 	if (mode) {
 		// mode = true
