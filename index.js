@@ -1501,10 +1501,10 @@ function breakOutRoomsReaction(reaction, user, mode) {
 		// výběr
 		return;
 	}
-	console.log(member);
 	
 	member = reaction.message.guild.members.cache
 		.find(m => m.id == user.id);
+	console.log(member);
 	nickname = (member != null) ? member.nickname : user.username;
 	console.log(nickname);
 	
