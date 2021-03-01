@@ -52,7 +52,7 @@ client.once('ready', () => {
 	// Cache PB007 room
 	client.guilds.cache.each(guild => {
 		guild.channels.cache.each(ch => {
-			if (ch.type != 'category' && ch.parent.name == 'ŠKOLA') {
+			if (ch.type != 'category' && ch.parent != null && ch.parent.name == 'ŠKOLA') {
 				ch.messages.fetch({ limit: 50 });
 			}
 		});
@@ -66,7 +66,8 @@ client.on('message', message => {
 	
 	console.log('In', message.channel.name, 'user', message.author.username, 'at', message.createdAt, 'wrote\n', message.content);
 	
-    params = message.content.substr(1).split(' ');
+    params = message.content.substr(1).split(' ')
+		.map(string => string.replace('_', ' '));
 
 	if (message.channel.name == 'drill') {
 		drill(message, params);
@@ -76,67 +77,70 @@ client.on('message', message => {
     if (message.content.startsWith('!')) {
 		console.log(message.content);
 	
-		if (['access'].includes(params[0])) {
+		if (['access'].includes(params[0].toLowerCase())) {
 			console.log('Příkaz access');
 			access(message, params);
-		} else if (['c', 'clear'].includes(params[0])) {
+		} else if (['b', 'breakoutrooms'].includes(params[0].toLowerCase())) {
+			console.log('Příkaz !breakoutrooms');
+			breakOutRooms(message, params);
+		} else if (['c', 'clear'].includes(params[0].toLowerCase())) {
 			console.log(1);
 			clear(message, params);
-		} else if (['e', 'emoji'].includes(params[0])) {
+		} else if (['e', 'emoji'].includes(params[0].toLowerCase())) {
 			console.log(2);
 			emoji_function(message, params);
-		} else if (['g', 'game'].includes(params[0])) {
+		} else if (['g', 'game'].includes(params[0].toLowerCase())) {
 			console.log(3);
 			game(message);
-		} else if (['h', 'help'].includes(params[0])) {
+		} else if (['h', 'help'].includes(params[0].toLowerCase())) {
 			console.log(4);
 			help(message, params);
 		} else if (['imback'].includes(params[0])) {
 			console.log('Calling !imback command')
 			imback(message, params);
-		} else if (['i', 'iplay'].includes(params[0])) {
+		} else if (['i', 'iplay'].includes(params[0].toLowerCase())) {
 			console.log(5);
 			iplay(message, params);
-		} else if (['k', 'kill'].includes(params[0])) {
+		} else if (['k', 'kill'].includes(params[0].toLowerCase())) {
 			console.log(6);
 			kill(message);
-		} else if (['leave'].includes(params[0])) {
+		} else if (['leave'].includes(params[0].toLowerCase())) {
 			console.log(7);
 			// leave(message);
-		} else if (['m', 'module'].includes(params[0])) {
+		} else if (['m', 'module'].includes(params[0].toLowerCase())) {
 			console.log('Calling !module command');
 			module(message, params);
-		} else if (['n', 'nickname'].includes(params[0])) {
+		} else if (['n', 'nickname'].includes(params[0].toLowerCase())) {
 			console.log(9);
 			nickname(message);
-		} else if (['play'].includes(params[0])) {
+		} else if (['play'].includes(params[0].toLowerCase())) {
 			console.log(10);
 			newstyle(message, ['play', 'play'].concat(params.slice(1)));
-		} else if (['p', 'plesk'].includes(params[0])) {
+		} else if (['p', 'plesk'].includes(params[0].toLowerCase())) {
 			console.log(11);
 			plesk(message);
-		} else if (['rangers'].includes(params[0])) {
+		} else if (['rangers'].includes(params[0].toLowerCase())) {
 			console.log(12);
 			rangers(message, params);
-		} else if (['r', 'role'].includes(params[0])) {
+		} else if (['r', 'role'].includes(params[0].toLowerCase())) {
 			console.log(13);
 			role_(message, params);
-		} else if (['spam'].includes(params[0])) {
+		} else if (['spam'].includes(params[0].toLowerCase())) {
 			console.log(14);
 			spam(message, params);
-		} else if (['s', 'stop'].includes(params[0])) {
+		} else if (['s', 'stop'].includes(params[0].toLowerCase())) {
 			console.log(15);
 			newstyle(message, ['play', 'stop']);
-		} else if (['v', 'volume'].includes(params[0])) {
+		} else if (['v', 'volume'].includes(params[0].toLowerCase())) {
 			console.log(17);
 			newstyle(message, ['play', 'volume'].concat(params.slice(1)));
-		} else if (['whatsnew'].includes(params[0])) {
+		} else if (['whatsnew'].includes(params[0].toLowerCase())) {
 			console.log(18);
 			whatsnew(message, params);
-		} else if (['z', 'zadani'].includes(params[0])) {
+		} else if (['z', 'zadani'].includes(params[0].toLowerCase())) {
 			console.log(19);
 			task(message);
-		} else if (['l', 'log'].includes(params[0])) {
+		} else if (['l', 'log'].includes(params[0].toLowerCase())) {
 			console.log(20);
 			log(message);
 		} else {console.log(21);
@@ -152,7 +156,7 @@ client.on('messageUpdate', (oldMessage, newMessage) => {
 client.on('voiceStateUpdate', (oldState, newState) => {
 	role = newState.guild.roles.cache.find(role =>
 		role.name == 'Člen hlasového kanálu');
-		
+	/* bude se mazat
 	if (oldState.channel == null) {
 		// Připojil se k hlasovému kanálu
 		oldState.member.roles.add(role);
@@ -160,6 +164,7 @@ client.on('voiceStateUpdate', (oldState, newState) => {
 		// Odpojil se z hlasového kanálu
 		oldState.member.roles.remove(role);
 	}
+	*/
 });
 
 client.on('messageReactionAdd', (reaction, user) => {
@@ -172,6 +177,7 @@ client.on('messageReactionAdd', (reaction, user) => {
 	// Volba předmětů, her...
 	if (monitoredChannelsIDs.includes(reaction.message.channel.id)) {
 		access_reaction(reaction, user, true);
+		breakOutRoomsReaction(reaction, user, true);
 		return;
 	}
 	
@@ -209,6 +215,7 @@ client.on('messageReactionRemove', (reaction, user) => {
 	// Volba předmětů, her...
 	if (monitoredChannelsIDs.includes(reaction.message.channel.id)) {
 		access_reaction(reaction, user, false);
+		breakOutRoomsReaction(reaction, user, false);
 		return;
 	}
 	
@@ -1219,6 +1226,11 @@ codePrefixToCategoryName = new Map([
 	[1, 'Dostupné hry']
 ]);
 
+function addMonitoredChannel(channel_id) {
+	monitoredChannelsIDs.push(channel_id);
+	fs.appendFile(monitored_path, '\n' + channel_id, () => {});
+}
+
 const colors = ['⚫', '🔵', '🟤', '🟢', '🟠', '🟣', '🔴', '⚪', '🟡',
 				'⬜', '🟧', '🟦', '🟥', '🟫', '🟪', '🟩', '🟨', '⬛'];
 
@@ -1235,8 +1247,7 @@ function access(msg, params) {
 	msg.delete().then(() => {
 		if (params[1] == 'new_category') {
 			ch_id = msg.guild.channels.cache.find(ch => ch.name == params[2]).id;
-			monitoredChannelsIDs.push(ch_id);
-			fs.appendFile(monitored_path, '\n' + ch_id, () => {});
+			addMonitoredChannel(ch_id);
 			msg.guild.channels.cache.find(ch => ch.name == params[2])
 				.fetch({ limit: 20 });
 				
@@ -1393,6 +1404,11 @@ function access_reaction(reaction, user, mode) {
 		false - reactionRemove
 	*/
 	
+	if (! reaction.message.channel.name.startsWith('výběr')) {
+		// je to breakout
+		return;
+	}
+	
 	emoji = reaction.emoji.toString();
 	
 	rows = reaction.message.content.split('\n\t').slice(1);
@@ -1441,8 +1457,103 @@ function imback(msg, params) {
 	});
 }
 
+async function breakOutRooms(msg, params) {
+	if (msg.member.roles.cache.find(r => cie(r.name, 'Cvičící') == undefined)) {
+		return;
+	}
+	
+	if (cie(params[1], 'init')) {
+		// !breakoutrooms init
+		
+		categoryName = params[2];
+		category = msg.guild.channels.cache.find(ch => cie(ch.name, categoryName));
+	
+		newChannel = await msg.guild.channels.create('breakoutrooms', {
+			type: 'text',
+			topic: 'Tvorba breakout místností',
+			parent: category,
+			permissionOverwrites: [
+				{
+					id: msg.guild.roles.cache.find(r => cie(r.name, '@everyone')),
+					deny: [
+						'SEND_MESSAGES',
+						'SEND_TTS_MESSAGES'
+					]
+				}			
+			]
+		});
+		
+		addMonitoredChannel(newChannel.id);
+		
+		message = await newChannel.send('Přidej reakci pro vytvoření místnosti');
+
+		message.react('👍');
+	}
+}
+
+function breakOutRoomsReaction(reaction, user, mode) {
+	/* mode
+		true  - reactionAdd
+		false - reactionRemove
+	*/
+	
+	if (! reaction.message.channel.name.startsWith('breakoutrooms')) {
+		// výběr
+		return;
+	}
+		
+	if (mode) {
+		// mode = true
+			
+		channelNames = reaction.message.guild.channels.cache
+			.filter(ch => cie(ch.type, 'voice'))
+			.map(ch => ch.name);
+		channelNames.push(user.username);
+		channelNames.sort();
+		channelPosition = channelNames.indexOf(user.username);
+		
+		reaction.message.guild.channels.create(user.username, {
+			type: 'voice',
+			parent: reaction.message.guild.channels.cache
+				.find(ch => cie(ch.name, 'hlasové kanály')),
+			permissionOverwrites: [
+				{
+					id: reaction.message.guild.roles.cache
+						.find(r => cie(r.name, '@everyone')),
+					deny: [
+						'VIEW_CHANNEL'
+					]
+				},
+				{
+					id: user,
+					allow: [
+						'VIEW_CHANNEL'
+					]
+				},
+				{
+					id: reaction.message.guild.roles.cache
+						.find(r => cie(r.name, 'cvičící')),
+					allow: [
+						'VIEW_CHANNEL'
+					]
+				}
+			],
+			position: channelPosition
+		});
+	} else {
+		// mode = false
+		
+		channel = reaction.message.guild.channels.cache
+			.find(ch => cie(ch.name, user.username));
+		
+		if (channel != undefined) {
+			channel.delete();
+		}
+	}
+}
+
 async function log(msg) {
-	//console.log(zip(['a','b','c'], [3,1,2]));
+	console.log(msg.guild.channels.cache.map(ch => ch.name));
 }
 
 
