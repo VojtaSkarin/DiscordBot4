@@ -308,9 +308,11 @@ function plesk(msg) {
 hint = new Map();
 hint.set('access', '!access [option] [params]*' +
 				   '\n\tSpráva výběru místností. Místnosti se nepřidávají tímto příkazem, ale reakcí v odpovídajícím kanále.' +
-				   '\n\t\toption - list_categories|add_room|new_category|delete_category|send_table' +
+				   '\n\t\toption - list_categories|add_subcategory|add_room|remove_room|new_category|delete_category|send_table' +
 				   '\n\t\t\tlist_categories - vypíše seznam monitorovaných kategorií' +
+				   '\n\t\t\tadd_subcategory [podkategorie] [jméno] - vytvoří podkategorii [jméno] v kategorii [kategorie]' +
 				   '\n\t\t\tadd_room [kategorie] [kanál] - vytvoří místnost [kanál] v kategorii [kategorie]' +
+				   '\n\t\t\tremove_room [kategorie] [kanál] - smaže místnost [kanál] v kategorii [kategorie]' +
 				   '\n\t\t\tnew_category [kanál] - přidá místnost [kanál] mezi monitorované kanály' +
 				   '\n\t\t\tdelete_category - není implementováno' +
 				   '\n\t\t\tsend_table [kanál] - smaže místnost [kanál] a vloží do něj tabulku pro výběr předmětů');
@@ -1337,6 +1339,13 @@ function access(msg, params) {
 			subcategory = params.length == 5 ? params[3] : params[3].substring(0, 2);
 			name = params.length == 5 ? params[4] : params[3];
 			
+			maybeExists = msg.guild.channels.cache.find(ch => cie(ch.name, name));
+			
+			if (maybeExists != undefined) {
+				msg.channel.send('Místnost tohoto jména již existuje');
+				return;
+			}
+			
 			await msg.guild.channels.create(name, {
 				type: 'text',
 				topic: subcategory,
@@ -1362,6 +1371,26 @@ function access(msg, params) {
 			
 			update(msg, category, subcategory);
 		
+		} else if (cie(params[1], 'remove room')) {
+			// !access remove_room 'category' <subcategory> 'name'
+			
+			console.log('!access remove_room');
+			
+			category = params[2];
+			subcategory = params.length == 5 ? params[3] : params[3].substring(0, 2);
+			name = params.length == 5 ? params[4] : params[3];
+			
+			maybeDoesntExists = msg.guild.channels.cache.find(ch => cie(ch.name, name));
+			
+			if (maybeDoesntExists == undefined) {
+				msg.channel.send('Místnost tohoto jména neexistuje');
+				return;
+			}
+			
+			await maybeDoesntExists.delete();
+			
+			update(msg, category, subcategory);
+			
 		} else if (cie(params[1], 'update')) {
 			// !access update 'category' 'subcategory'
 			
