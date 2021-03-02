@@ -410,6 +410,11 @@ hint.set('subject', '*nevolá se příkazem*' +
 					'\n\tPředměty se přidávají a odebírají v kanálu #výběr-předmětů.' +
 					' Pro přidání nebo odebrání předmětu je třeba zakliknout odpovídající' +
 					' reakci na příspěvku se seznamem předmětů.');
+hint.set('support', '!support' +
+					'\n\tZobrazí místnost všem IT Studentům.' +
+					'\n\tPříklady:' +
+					'\n\t\tPíšu zkoušku a potřebuji pomoc ostatních' +
+					'\n\t\t\t!support')
 hint.set('version', '!v[ersion]' +
 			'\n\tVypíše současnou verzi');
 hint.set('whatsnew', '!whatsnew <all>' +
@@ -798,16 +803,26 @@ function whatsnew(msg, params) {
 	msg.delete().then(() =>
 	{
 		function last() {
-			msg.channel.send('**WhatsNew v .2.18**' +
+			msg.channel.send('**WhatsNew v .2.19**' +
+			'\n\t__Major changes__' +
+			'\n\t\t⚡ Přidáno !support' +
 			'\n\t__Minor changes__' +
-			'\n\t\t⛏ Přidáno !access add_subcategory' +
-			'\n\t\t⛏ !access add_room nyní upravuje odpovídající tabulku předmětů');
+			'\n\t\t⛏ Přidáno !access update' +
+			'\n\t__Bug fixes__' +
+			'\n\t\t:bulb: Opraveno !access add_room');
 		}
 		
 		if (params.length == 1) {
 			last();
 		} else if (params.length == 2 && params[1] == 'all') {
 			last();
+			
+			function last() {
+			msg.channel.send('**WhatsNew v .2.18**' +
+			'\n\t__Minor changes__' +
+			'\n\t\t⛏ Přidáno !access add_subcategory' +
+			'\n\t\t⛏ !access add_room nyní upravuje odpovídající tabulku předmětů');
+		}
 			
 			msg.channel.send('**WhatsNew v .2.17**' +
 			'\n\t__Bug fixes__' +
