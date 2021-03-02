@@ -1240,22 +1240,62 @@ function access(msg, params) {
 			.forEach(emoji => msg.react(emoji));
 	};
 	
+	function update(msg, category, subcategory) {
+		channel = msg.guild.channels.cache.find(ch => {
+			return ch.name.startsWith('výběr') && cie(category, ch.parent.name);
+		});
+		
+		if (channel == undefined) {
+			msg.channel.send('Kategorie `' + category + '` neexistuje');
+			return;
+		}
+		
+		message = channel.messages.cache.find(m => {
+			return m.content.substring(2).toLowerCase()
+				.startsWith(subcategory.toLowerCase());
+		});
+		
+		if (message == undefined) {
+			msg.channel.send('Podkategorie `' + subcategory + '` neexistuje');
+			return;
+		}
+		
+		names = msg.guild.channels.cache.filter(ch => ch.type == 'text')
+			.filter(ch => ch.parent != null)
+			.filter(ch => cie(ch.parent.name, category))
+			.filter(ch => ! ch.name.toLowerCase().startsWith('výběr'))
+			.filter(ch => cie(ch.topic, subcategory))
+			.map(ch => ch.name)
+			.sort();
+			
+		names = names.map(name => name.replace(/-/g, ' '));
+		tuples = zip(names, colors);
+		
+		newText = message.content.split('\n')[0] +
+			tuples.reduce((acc, value) => {
+				return acc + '\n\t' + value[1] + ' `' + value[0] + '`';
+			}, '');
+		
+		message.edit(newText);			
+		colors.slice(0, names.length).forEach(c => message.react(c));
+	};
+	
 	if (! checkAdmin(msg)) {
 		return;
 	}
 	
-	msg.delete().then(() => {
-		if (params[1] == 'new_category') {
+	msg.delete().then(async () => {
+		if (params[1] == 'new category') {
 			ch_id = msg.guild.channels.cache.find(ch => ch.name == params[2]).id;
 			addMonitoredChannel(ch_id);
 			msg.guild.channels.cache.find(ch => ch.name == params[2])
 				.fetch({ limit: 20 });
 				
-		} else if (params[1] == 'remove_category') {
+		} else if (params[1] == 'remove category') {
 			// Není potřeba
 			console.log('access remove_category není implementováno');
 		
-		} else if (cie(params[1], 'add_subcategory')) {
+		} else if (cie(params[1], 'add subcategory')) {
 			// !access add_subcategory 'category' 'code' 'subcategory'
 			
 			category = params[2]
@@ -1269,22 +1309,19 @@ function access(msg, params) {
 				subcategory[0].toUpperCase() +
 				subcategory.slice(1).replace(/-/g, ' ') + '**');
 			
-		} else if (params[1] == 'add_room') {
-			// !access add_room 'category' 'name'
+		} else if (cie(params[1], 'add room')) {
+			// !access add_room 'category' <subcategory> 'name'
+			
+			console.log('!access add_room');
 			
 			category = params[2];
-			name = params[3];
+			subcategory = params.length == 5 ? params[3] : params[3].substring(0, 2);
+			name = params.length == 5 ? params[4] : params[3];
 			
-			names = msg.guild.channels.cache.filter(ch => ch.type == 'text')
-				.filter(ch => cie(ch.parent.name, category))
-				.map(ch => ch.name);
-			names.push(name);
-			names.sort();
-			index = names.lastIndexOf(name);
-			
-			msg.guild.channels.create(params[3], {
+			await msg.guild.channels.create(name, {
 				type: 'text',
-				parent: msg.guild.channels.cache.find(ch => cie(ch.name, params[2])),
+				topic: subcategory,
+				parent: msg.guild.channels.cache.find(ch => cie(ch.name, category)),
 				permissionOverwrites: [
 					{
 						id: msg.guild.roles.cache.find(r => r.name == '@everyone'),
@@ -1301,36 +1338,24 @@ function access(msg, params) {
 							'USE_EXTERNAL_EMOJIS',
 						]
 					}
-				],
-				position: index
+				]
 			});
 			
-			subjectType = name.slice(0, 2);
+			update(msg, category, subcategory);
+		
+		} else if (cie(params[1], 'update')) {
+			// !access update 'category' 'subcategory'
 			
-			channel = msg.guild.channels.cache.find(ch => {
-				return ch.name.startsWith('výběr') && cie(category, ch.parent.name);
-			});
-			message = channel.messages.cache.find(m => {
-				return cie(m.content.substring(2, 4), subjectType);
-			});
+			category = params[2]
+			subcategory = params[3]
 			
-			names = names.filter(name => name.startsWith(subjectType))
-				.map(name => name.replace(/-/g, ' '));
-			tuples = zip(names, colors);
+			update(msg, category, subcategory);
 			
-			newText = message.content.split('\n')[0] +
-				tuples.reduce((acc, value) => {
-					return acc + '\n\t' + value[1] + ' `' + value[0] + '`';
-				}, '');
-			
-			message.edit(newText);			
-			colors.slice(0, names.length).forEach(c => message.react(c));
-			
-		} else if (params[1] == 'list_categories') {
+		} else if (params[1] == 'list categories') {
 			msg.channel.send('**Monitorované kanály jsou:**\n\t' +
 				monitoredChannelsIDs.join('\n\t'));
 				
-		} else if (params[1] == 'send_table') {
+		} else if (params[1] == 'send table') {
 			// !access send_table *channel*
 			
 			channel = msg.guild.channels.cache.find(ch => ch.name == params[2]);
@@ -1394,6 +1419,9 @@ function access(msg, params) {
 					.then(m => { reactColors(m, value.length);
 				});
 			});
+			
+		} else {
+			console.log('!access nemá přepínač `' + params[1] + '`');
 		}
 	});
 }
@@ -1415,12 +1443,23 @@ function access_reaction(reaction, user, mode) {
 	row = rows.find(row => {
 		return row.split(' ')[0] == emoji;
 	});	
+	
+	if (row == undefined) { // reakce navíc
+		console.log('zadána reakci, pro kterou neexistuje místnost');
+		return;
+	}
+	
 	index = row.indexOf('`');
 	
 	channelCode = row.substring(index + 1, index + 6).toLowerCase()
 		.replace(' ', '-');
 	channel = reaction.message.guild.channels.cache.find(ch =>
 		ch.name.startsWith(channelCode));
+		
+	if (channel == undefined) {
+		console.log('Kanál s kódem `' + channelCode + '` neexistuje, ale je ve výběru');
+		return;
+	}
 		
 	if (mode) {
 		channel.updateOverwrite(user,
@@ -1557,7 +1596,9 @@ function breakOutRoomsReaction(reaction, user, mode) {
 }
 
 async function log(msg) {
-	console.log(msg.guild.channels.cache.map(ch => ch.name));
+	// console.log('log');
+	
+	console.log('log');
 }
 
 
