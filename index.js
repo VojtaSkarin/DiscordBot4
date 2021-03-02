@@ -1311,6 +1311,7 @@ function access(msg, params) {
 			
 			if (params.length != 3) {
 				msg.channel.send('Špatný počet argumentů');
+				return;
 			}
 			
 			ch_id = msg.guild.channels.cache.find(ch => ch.name == params[2]).id;
@@ -1327,6 +1328,7 @@ function access(msg, params) {
 			
 			if (params.length != 5) {
 				msg.channel.send('Špatný počet argumentů');
+				return;
 			}
 			
 			category = params[2]
@@ -1345,6 +1347,7 @@ function access(msg, params) {
 			
 			if (params.length != 4 && params.length != 5) {
 				msg.channel.send('Špatný počet argumentů');
+				return;
 			}
 			
 			console.log('!access add_room');
@@ -1390,6 +1393,7 @@ function access(msg, params) {
 			
 			if (params.length != 4) {
 				msg.channel.send('Špatný počet argumentů');
+				return;
 			}
 			
 			console.log('!access remove_room');
@@ -1415,6 +1419,7 @@ function access(msg, params) {
 			
 			if (params.length != 4) {
 				msg.channel.send('Špatný počet argumentů');
+				return;
 			}
 			
 			category = params[2]
@@ -1431,6 +1436,7 @@ function access(msg, params) {
 			
 			if (params.length != 3) {
 				msg.channel.send('Špatný počet argumentů');
+				return;
 			}
 			
 			channel = msg.guild.channels.cache.find(ch => ch.name == params[2]);
