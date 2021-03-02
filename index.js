@@ -1421,6 +1421,26 @@ function access(msg, params) {
 			category = params[2];
 			name = params[3];
 			
+			channel = msg.guild.channels.cache.find(ch => {
+				return ch.name.startsWith('výběr') && ch.parent != undefined &&
+					cie(category, ch.parent.name);
+			});
+		
+			if (channel == undefined) {
+				msg.channel.send('Kategorie `' + category + '` neexistuje');
+				return;
+			}
+			
+			message = channel.messages.cache.find(m => {
+				return m.content.substring(2).toLowerCase()
+					.startsWith(subcategory.toLowerCase());
+			});
+		
+			if (message == undefined) {
+				msg.channel.send('Podkategorie `' + subcategory + '` neexistuje');
+				return;
+			}
+			
 			maybeDoesntExists = msg.guild.channels.cache.find(ch => cie(ch.name, name));
 			
 			if (maybeDoesntExists == undefined) {
