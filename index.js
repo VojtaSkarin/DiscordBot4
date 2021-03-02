@@ -1388,7 +1388,7 @@ function access(msg, params) {
 		} else if (cie(params[1], 'remove room')) {
 			// !access remove_room 'category' 'name'
 			
-			if (params.length != 3) {
+			if (params.length != 4) {
 				msg.channel.send('Špatný počet argumentů');
 			}
 			
