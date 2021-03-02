@@ -1389,7 +1389,7 @@ function access(msg, params) {
 			
 			await maybeDoesntExists.delete();
 			
-			update(msg, category, subcategory);
+			setTimeout(() => update(msg, category, subcategory), 3000);
 			
 		} else if (cie(params[1], 'update')) {
 			// !access update 'category' 'subcategory'
