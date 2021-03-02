@@ -131,6 +131,9 @@ client.on('message', message => {
 		} else if (['s', 'stop'].includes(params[0].toLowerCase())) {
 			console.log(15);
 			newstyle(message, ['play', 'stop']);
+		} else if (['support'].includes(params[0].toLowerCase())) {
+			console.log('Příkaz !support');
+			support(message, params);
 		} else if (['v', 'volume'].includes(params[0].toLowerCase())) {
 			console.log(17);
 			newstyle(message, ['play', 'volume'].concat(params.slice(1)));
@@ -1475,13 +1478,13 @@ function access_reaction(reaction, user, mode) {
 	} else {
 		channel.updateOverwrite(user,
 		{
-			'ADD_REACTIONS'       : false,
-			'ATTACH_FILES'        : false,
-			'EMBED_LINKS'         : false,
-			'MENTION_EVERYONE'    : false,
-			'READ_MESSAGE_HISTORY': false,
-			'SEND_MESSAGES'       : false,
-			'VIEW_CHANNEL'        : false
+			'ADD_REACTIONS'       : null,
+			'ATTACH_FILES'        : null,
+			'EMBED_LINKS'         : null,
+			'MENTION_EVERYONE'    : null,
+			'READ_MESSAGE_HISTORY': null,
+			'SEND_MESSAGES'       : null,
+			'VIEW_CHANNEL'        : null
 		});
 	}
 }
@@ -1593,6 +1596,37 @@ function breakOutRoomsReaction(reaction, user, mode) {
 			channel.delete();
 		}
 	}
+}
+
+function support(msg, params) {
+	msg.channel.updateOverwrite(
+		msg.guild.roles.cache.find(r => cie(r.name, 'it student')),
+		{
+			'ADD_REACTIONS'       : true,
+			'ATTACH_FILES'        : true,
+			'EMBED_LINKS'         : true,
+			'MENTION_EVERYONE'    : true,
+			'READ_MESSAGE_HISTORY': true,
+			'SEND_MESSAGES'       : true,
+			'VIEW_CHANNEL'        : true,
+		}
+	);
+	
+	setTimeout(() => {
+		console.log('odebirání role `it student` z kanálu `' + msg.channel.name + '`');
+		msg.channel.updateOverwrite(
+			msg.guild.roles.cache.find(r => cie(r.name, 'it student')),
+			{
+				'ADD_REACTIONS'       : null,
+				'ATTACH_FILES'        : null,
+				'EMBED_LINKS'         : null,
+				'MENTION_EVERYONE'    : null,
+				'READ_MESSAGE_HISTORY': null,
+				'SEND_MESSAGES'       : null,
+				'VIEW_CHANNEL'        : null,
+			}
+		);
+	}, 2 * 60 * 60 * 1000); // 2 h
 }
 
 async function log(msg) {
