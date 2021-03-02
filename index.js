@@ -1307,6 +1307,12 @@ function access(msg, params) {
 	
 	msg.delete().then(async () => {
 		if (params[1] == 'new category') {
+			// !access new_category 'kategorie'
+			
+			if (params.length != 3) {
+				msg.channel.send('Špatný počet argumentů');
+			}
+			
 			ch_id = msg.guild.channels.cache.find(ch => ch.name == params[2]).id;
 			addMonitoredChannel(ch_id);
 			msg.guild.channels.cache.find(ch => ch.name == params[2])
@@ -1318,6 +1324,10 @@ function access(msg, params) {
 		
 		} else if (cie(params[1], 'add subcategory')) {
 			// !access add_subcategory 'category' 'code' 'subcategory'
+			
+			if (params.length != 5) {
+				msg.channel.send('Špatný počet argumentů');
+			}
 			
 			category = params[2]
 			code = params[3];
@@ -1332,6 +1342,10 @@ function access(msg, params) {
 			
 		} else if (cie(params[1], 'add room')) {
 			// !access add_room 'category' <subcategory> 'name'
+			
+			if (params.length != 4 && params.length != 5) {
+				msg.channel.send('Špatný počet argumentů');
+			}
 			
 			console.log('!access add_room');
 			
@@ -1372,13 +1386,16 @@ function access(msg, params) {
 			update(msg, category, subcategory);
 		
 		} else if (cie(params[1], 'remove room')) {
-			// !access remove_room 'category' <subcategory> 'name'
+			// !access remove_room 'category' 'name'
+			
+			if (params.length != 3) {
+				msg.channel.send('Špatný počet argumentů');
+			}
 			
 			console.log('!access remove_room');
 			
 			category = params[2];
-			subcategory = params.length == 5 ? params[3] : params[3].substring(0, 2);
-			name = params.length == 5 ? params[4] : params[3];
+			name = params[3];
 			
 			maybeDoesntExists = msg.guild.channels.cache.find(ch => cie(ch.name, name));
 			
@@ -1387,12 +1404,18 @@ function access(msg, params) {
 				return;
 			}
 			
+			subcategory = maybeDoesntExists.topic;
+			
 			await maybeDoesntExists.delete();
 			
 			setTimeout(() => update(msg, category, subcategory), 3000);
 			
 		} else if (cie(params[1], 'update')) {
 			// !access update 'category' 'subcategory'
+			
+			if (params.length != 4) {
+				msg.channel.send('Špatný počet argumentů');
+			}
 			
 			category = params[2]
 			subcategory = params[3]
@@ -1405,6 +1428,10 @@ function access(msg, params) {
 				
 		} else if (params[1] == 'send table') {
 			// !access send_table *channel*
+			
+			if (params.length != 3) {
+				msg.channel.send('Špatný počet argumentů');
+			}
 			
 			channel = msg.guild.channels.cache.find(ch => ch.name == params[2]);
 			category = channel.parent.name;
