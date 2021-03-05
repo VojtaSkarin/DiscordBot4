@@ -1675,8 +1675,19 @@ function breakOutRoomsReaction(reaction, user, mode) {
 	}
 	
 	member = reaction.message.guild.members.cache
-		.find(m => m.id == user.id);
-	nickname = (member != null) ? member.nickname : user.username;
+		.find(m => {
+			console.log(m.id, user.id);
+			return m.id == user.id;
+		});
+		
+	if (member == undefined) {
+		console.log('Id problém - there is no member with id of reactiong user')
+		console.log('user', user);
+		console.log('member', member);
+		return;
+	}
+	
+	nickname = (member.nickname != null) ? member.nickname : user.username;
 	
 	if (mode) {
 		// mode = true
