@@ -175,7 +175,8 @@ client.on('messageReactionAdd', (reaction, user) => {
 		return;
 	}
 	
-	console.log('Reakce přidána');
+	console.log('Add: ' + user.username + ' přidal reakci ' + reaction.emoji +
+		' na příspěvek\n' + reaction.message.content);
 	
 	// Volba předmětů, her...
 	if (monitoredChannelsIDs.includes(reaction.message.channel.id)) {
@@ -213,7 +214,9 @@ client.on('messageReactionRemove', (reaction, user) => {
 		return;
 	}
 	
-	console.log('Reakce odebrána');
+	
+	console.log('Remove: ' + user.username + ' odebral reakci ' + reaction.emoji +
+		' na příspěvek\n' + reaction.message.content);
 	
 	// Volba předmětů, her...
 	if (monitoredChannelsIDs.includes(reaction.message.channel.id)) {
@@ -311,14 +314,14 @@ hint.set('access', '!access [option] [params]*' +
 				   '\n\t\toption - list_categories|add_subcategory|add_room|remove_room|new_category|delete_category|send_table' +
 				   '\n\t\t\tlist_categories - vypíše seznam monitorovaných kategorií' +
 				   '\n\t\t\tadd_subcategory [podkategorie] [jméno] - vytvoří podkategorii [jméno] v kategorii [kategorie]' +
-				   '\n\t\t\tadd_room [kategorie] <podkategorie> [kanál] - vytvoří místnost [kanál] v kategorii [kategorie] a podkategorii <podkategorie>, pokud není podkategorie zadána, použijí se jako kategorie první dva znaky z názvu místnosti' +
+				   '\n\t\t\tadd_room [kategorie] <podkategorie> [kanál] - vytvoří místnost [kanál] v kategorii [kategorie] a podkategorii <podkategorie>, pokud není podkategorie zadána, použijí se jako podkategorie první dva znaky z názvu místnosti' +
 				   '\n\t\t\tremove_room [kategorie] [kanál] - smaže místnost [kanál] v kategorii [kategorie]' +
 				   '\n\t\t\tnew_category [kanál] - přidá místnost [kanál] mezi monitorované kanály' +
 				   '\n\t\t\tdelete_category - není implementováno' +
 				   '\n\t\t\tsend_table [kanál] - smaže místnost [kanál] a vloží do něj tabulku pro výběr předmětů' +
 				   '\n\tPříklady:' +
-				   '\n\t\tChci vytvořit kategorii škola' +
-				   '\n\t\t\t!access new_category škola' +
+				   '\n\tChci vytvořit kategorii škola' +
+				   '\n\t\t!access new_category škola' +
 				   '\n\tChci vytvořit podkategorii \'Pokročilé informatické předměty\' (kódy IA)' +
 				   '\n\t\t!access add_subcategory ia pokročilé_informatické_předměty' +
 				   '\n\tChci vytvořit kanál pb156-sítě v kategorii pb' +
