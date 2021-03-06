@@ -64,7 +64,7 @@ client.once('ready', () => {
 client.on('message', message => {
 	//pepegaCather(message);
 	
-	console.log('In', message.channel.name, 'user', message.author.username, 'at', message.createdAt, 'wrote\n', message.content);
+	console.log(new Date().toUTCString(), ': In', message.channel.name, 'user', message.author.username, 'at', message.createdAt, 'wrote\n', message.content);
 	
     params = message.content.substr(1).split(' ')
 		.map(string => string.replace('_', ' '));
@@ -175,7 +175,8 @@ client.on('messageReactionAdd', (reaction, user) => {
 		return;
 	}
 	
-	console.log('Add: ' + user.username + ' přidal reakci ' + reaction.emoji +
+	console.log(new Date().toUTCString(), 'Add: ' + user.username +
+		' přidal reakci ' + reaction.emoji.name +
 		' na příspěvek\n' + reaction.message.content);
 	
 	// Volba předmětů, her...
@@ -215,8 +216,9 @@ client.on('messageReactionRemove', (reaction, user) => {
 	}
 	
 	
-	console.log('Remove: ' + user.username + ' odebral reakci ' + reaction.emoji +
-		' na příspěvek\n' + reaction.message.content);
+	console.log(new Date().toUTCString(), 'Remove: ' + user.username +
+		' odebral reakci ' + reaction.emoji.name +
+		' z příspěvku\n' + reaction.message.content);
 	
 	// Volba předmětů, her...
 	if (monitoredChannelsIDs.includes(reaction.message.channel.id)) {
