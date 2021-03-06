@@ -17,8 +17,7 @@ const fs = require('fs');
 // fs.appendFile(gameListPath, '\n' + params[2], function(err) {});
 
 // create the Discord client
-const intents = new Discord.Intents(Discord.Intents.ALL);
-const client = new Discord.Client({ws: { intents }});
+const client = new Discord.Client({ ws: { intents: ['GUILD_PRESENCES', 'GUILD_MEMBERS'] }});
 
 const bot_path = process.env.BOT_PATH;
 
