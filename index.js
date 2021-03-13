@@ -1109,16 +1109,36 @@ async function module(msg, params) {
 			});
 		} else if (params[1] == 'new') {
 		// !module new
+		
 			console.log('Přepínač !module new');
-			if (params.length < 4) {
+			if (params.length != 4) {
+				msg.channel.send('Špatný počet parametrů');
 				return;
 			}
+			
 			name = params[3][0].toUpperCase() + params[3].slice(1);
-			at_url = msg.attachments.first().url;
+			attachment = msg.attachments.first();
+			
+			if (attachment == undefined) {
+				msg.channel.send('Musíš přiložit přidávané emoji jako obrázek do zprávy');
+				return;
+			}
+			
+			at_url = attachment.url;
 			console.log('URL: ' + at_url);
+			
+			dirs = fs.readdirSync(emoji_dir)
+			found = dirs.find(dir => cie(unifyName(dir), unifyName(params[2])));
+			if (found == undefined) {
+				msg.channel.send('Oddíl `' + params[2] + '` neexistuje');
+				return;
+			}
+			
 			request = https.get(at_url, response => response.pipe(fs.createWriteStream(
 					emoji_dir + '/' + params[2] + '/' + name + '.' +
 						at_url.split('.').pop())));
+		} else {
+			msg.channel.send('Neexistující volba `' + params[1] + '`');
 		}
 	}
 	if (params[1] != 'new') {
