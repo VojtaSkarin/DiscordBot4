@@ -372,17 +372,17 @@ hint.set('imback', '!imback' +
 			'\n\t\t\t\tnáhodná barva, pokud vynecháno' +
 			'\n\t\tremove - smaže roli [game]Player');*/
 hint.set('module', '!m[odule] [list|add|show|new] <param>' +
-			'\n\tSlouží ke správě emoji. Náš server má limit emoji 50. Jelikož emotů používáme víc (teď cca 80), je potřeba mezi aktivními emoji *přepínat*. Pokud tedy chci použít emoji, které právě není *aktivní*, musím si v seznamu najít jeho jméno a pak jej *přidat* příkazem add.' +
+			'\n\tSlouží k načítání a přidávání emoji. Emoji v databázi lze načíst pomocí !module add; emoji jež v databázi není lze do databaáze přidat pomocí !module new. Náš server má limit 50 emoji. Jelikož emotů používáme víc (teď cca 80), je potřeba mezi aktivními emoji *přepínat* (načítat neaktivní emoji). Pokud tedy chci použít emoji, které právě není *aktivní*, musím si v seznamu najít jeho jméno a pak jej *přidat* příkazem add.' +
 			'\n\t\tlist <oddíl> - vypíše seznam oddílů' +
 			'\n\t\t\toddíl - pokud je zadáno, vypíše seznam emoji v oddílu' +
-			'\n\t\tadd [emoji] - přidá emoji [emoji]' +
+			'\n\t\tadd [emoji] - načte emoji [emoji], které je již v databázi' +
 			'\n\t\tshow [emoji] - zobrazí emoji [emoji]' +
-			'\n\t\tnew [oddíl] [name] - z obrázku přiloženého ke zprávě vytvoří nové emoji s názvem [name] v oddílu [oddíl]' +
+			'\n\t\tnew [oddíl] [name] - z obrázku přiloženého ke zprávě vytvoří nové emoji s názvem [name] v oddílu [oddíl] a přidá jej do databáze; pro použití musí být nasledně toto emoji explicitně načteno' +
 			'\n\tPříklady:' +
-			'\n\t\tChci vytvořit nové emoji PepeF a zařadit jej do oddílu žáby' +
+			'\n\t\tChci do databáze přidat nové emoji PepeF a zařadit jej do oddílu žáby' +
 			'\n\t\t\t!module new žáby PepeF' +
 			'\n\t\t\t\ta ke zprávě přiložím obrázek PepeF' +
-			'\n\t\tChci přidat emoji CringeHarold' +
+			'\n\t\tChci načíst emoji CringeHarold z databáze' +
 			'\n\t\t\t!module add CringeHarold' +
 			'\n\t\tChci vypsat seznam oddílů emoji' +
 			'\n\t\t\t!module list' +
