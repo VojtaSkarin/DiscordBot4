@@ -454,9 +454,7 @@ function help(msg, params) {
 			text += 'Když se chceš dozvědět, jak funguje některý z příkazů,' +
 					' napiš !help [příkaz]' +
 					'\n\nPříkazy, bez kterých se neobejdeš:' +
-					'\n\tiplay' +
-					'\n\tmodule' +
-					'\n\taccess' +
+					'\n\tmodule - přidávání emoji' +
 					'\nSeznam všech příkazů:';
 			hint.forEach((_, key) => text += '\n\t' + key);
 		}
