@@ -372,7 +372,7 @@ hint.set('imback', '!imback' +
 			'\n\t\t\t\tnáhodná barva, pokud vynecháno' +
 			'\n\t\tremove - smaže roli [game]Player');*/
 hint.set('module', '!m[odule] [list|add|show|new] <param>' +
-			'\n\tSlouží k načítání a přidávání emoji. Emoji v databázi lze načíst pomocí !module add; emoji jež v databázi není lze do databaáze přidat pomocí !module new. Náš server má limit 50 emoji. Jelikož emotů používáme víc (teď cca 80), je potřeba mezi aktivními emoji *přepínat* (načítat neaktivní emoji). Pokud tedy chci použít emoji, které právě není *aktivní*, musím si v seznamu najít jeho jméno a pak jej *přidat* příkazem add.' +
+			'\n\tSlouží k načítání a přidávání emoji. Emoji v databázi lze načíst pomocí !module add; emoji jež v databázi není lze do databáze přidat pomocí !module new. Náš server má limit 50 emoji. Jelikož emotů používáme víc (teď cca 80), je potřeba mezi aktivními emoji *přepínat* (načítat neaktivní emoji). Pokud tedy chci použít emoji, které právě není *aktivní*, musím si v seznamu najít jeho jméno a pak jej *přidat* příkazem add.' +
 			'\n\t\tlist <oddíl> - vypíše seznam oddílů' +
 			'\n\t\t\toddíl - pokud je zadáno, vypíše seznam emoji v oddílu' +
 			'\n\t\tadd [emoji] - načte emoji [emoji], které je již v databázi' +
