@@ -1690,7 +1690,26 @@ function breakOutRoomsReaction(reaction, user, mode) {
 	*/
 	
 	if (! reaction.message.channel.name.startsWith('breakoutrooms')) {
-		// výběr
+		// Reakce se netýká breakoutrooms
+		return;
+	}
+	
+	emoji = reaction.emoji.name;
+	
+	row = reaction.message.content.split('\n')
+		.find(r => r.startsWith(emoji));
+	
+	if (row == undefined) {
+		console.log('Skupina ' + emoji + ' neexistuje');
+		return;
+	}
+	
+	groupName = row.substring(emoji.length + 1);
+	
+	groupRole = reaction.message.guild.roles.cache.find(r => cie(r.name, groupName));
+	
+	if (groupRole == undefined) {
+		console.log('Role cvičení `' + groupName + '` neexistuje')
 		return;
 	}
 	
@@ -1711,26 +1730,14 @@ function breakOutRoomsReaction(reaction, user, mode) {
 	
 	if (mode) {
 		// mode = true
-			
-		channelNames = reaction.message.guild.channels.cache
-			.filter(ch => cie(ch.type, 'voice'))
-			.map(ch => ch.name);
-		channelNames.push(nickname);
-		channelNames.sort();
-		channelPosition = channelNames.indexOf(nickname);
+	
+		member.roles.add(groupRole);
 		
 		reaction.message.guild.channels.create(nickname, {
 			type: 'voice',
 			parent: reaction.message.guild.channels.cache
-				.find(ch => cie(ch.name, 'hlasové kanály')),
+				.find(ch => cie(ch.name, groupName)),
 			permissionOverwrites: [
-				{
-					id: reaction.message.guild.roles.cache
-						.find(r => cie(r.name, '@everyone')),
-					deny: [
-						'VIEW_CHANNEL'
-					]
-				},
 				{
 					id: user,
 					allow: [
@@ -1744,12 +1751,13 @@ function breakOutRoomsReaction(reaction, user, mode) {
 						'VIEW_CHANNEL'
 					]
 				}
-			],
-			position: channelPosition
+			]
 		});
 	} else {
 		// mode = false
-		
+	
+		member.roles.remove(groupRole);
+			
 		channel = reaction.message.guild.channels.cache
 			.find(ch => cie(ch.name, nickname));
 		
@@ -1793,7 +1801,11 @@ function support(msg, params) {
 async function log(msg) {
 	// console.log('log');
 	
-	console.log('log');
+	message = msg.guild.channels.cache.find(ch => ch.name == 'breakoutrooms').
+		messages.cache.first();
+	message.react('1️⃣');
+	message.react('2️⃣');
+
 }
 
 
