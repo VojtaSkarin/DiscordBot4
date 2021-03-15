@@ -1808,13 +1808,7 @@ function support(msg, params) {
 async function log(msg) {
 	// console.log('log');
 	
-	msg.guild.channels.cache.each(ch => {
-		if (ch.parent != null && ch.parent.name.startsWith('Skupina')
-			&& ch.name != 'obecné') {
-				ch.updateOverwrite(msg.guild.roles.cache.find(r => r.name == '@everyone'),
-				{'VIEW_CHANNEL': false});
-			}
-	});
+	console.log('log');
 }
 
 
