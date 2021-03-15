@@ -1015,6 +1015,20 @@ async function module(msg, params) {
 			}
 		}
 	};
+			
+	function existsSomewhere(name) {
+		dirs = fs.readdirSync(emoji_dir);
+		for (j = 0; j < dirs.length; j++) {
+			files = fs.readdirSync(emoji_dir + '/' + dirs[j]);
+			for (k = 0; k < files.length; k++) {
+				if (unifyName(name) == unifyName(files[k].slice(0, -4))) {
+					console.log('Soubor ' + name + ' existuje');
+					return true;
+				}
+			}
+		}
+		return false;
+	};
 	
 	console.log('Funkce !module');
 	
@@ -1050,20 +1064,6 @@ async function module(msg, params) {
 		} else if (params[1] == 'add') {
 		// !module add
 			
-			function existsSomewhere(name) {
-				dirs = fs.readdirSync(emoji_dir);
-				for (j = 0; j < dirs.length; j++) {
-					files = fs.readdirSync(emoji_dir + '/' + dirs[j]);
-					for (k = 0; k < files.length; k++) {
-						if (unifyName(name) == unifyName(files[k].slice(0, -4))) {
-							console.log('Soubor ' + name + ' existuje');
-							return true;
-						}
-					}
-				}
-				return false;
-			};
-			
 			console.log('Větev !module add');
 			
 			toAdd = params.slice(2)
@@ -1096,13 +1096,25 @@ async function module(msg, params) {
 			console.log('Emoji přidána');
 			
 		} else if (params[1] == 'show') {
-			if (params.length < 3) {
+			// !module show
+			
+			if (params.length != 3) {
+				msg.channel.send('Špatný počet argumentů');
 				return;
 			}
 			
-			msg.channel.send('**' + params[2] + '**', {
+			name = params[2]
+			
+			if (! existsSomewhere(name)) {
+				msg.channel.send('Emoji ' + name + ' neexistuje');
+				return;
+			}
+			
+			result = expandName(name);
+			
+			msg.channel.send('**' + result[1] + '**', {
 				files: [
-					await find_in_folder(params[2])
+					result[0]
 				]
 			});
 		} else if (params[1] == 'new') {
