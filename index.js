@@ -1739,6 +1739,13 @@ function breakOutRoomsReaction(reaction, user, mode) {
 				.find(ch => cie(ch.name, groupName)),
 			permissionOverwrites: [
 				{
+					id: reaction.message.guild.roles.cache
+						.find(r => cie(r.name, '@everyone')),
+					deny: [
+						'VIEW_CHANNEL'
+					]
+				},
+				{
 					id: user,
 					allow: [
 						'VIEW_CHANNEL'
@@ -1801,11 +1808,13 @@ function support(msg, params) {
 async function log(msg) {
 	// console.log('log');
 	
-	message = msg.guild.channels.cache.find(ch => ch.name == 'breakoutrooms').
-		messages.cache.first();
-	message.react('1️⃣');
-	message.react('2️⃣');
-
+	msg.guild.channels.cache.each(ch => {
+		if (ch.parent != null && ch.parent.name.startsWith('Skupina')
+			&& ch.name != 'obecné') {
+				ch.updateOverwrite(msg.guild.roles.cache.find(r => r.name == '@everyone'),
+				{'VIEW_CHANNEL': false});
+			}
+	});
 }
 
 
