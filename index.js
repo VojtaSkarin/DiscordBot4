@@ -1740,6 +1740,13 @@ function breakOutRoomsReaction(reaction, user, mode) {
 	
 	nickname = (member.nickname != null) ? member.nickname : user.username;
 	
+	parentChannel = reaction.message.guild.channels.cache.find(ch => cie(ch.name, groupName));
+	
+	if (parentChannel == undefined) {
+		console.log('Skupina ' + groupName + ' neexistuje')
+		return;
+	}
+	
 	if (mode) {
 		// mode = true
 	
@@ -1747,8 +1754,7 @@ function breakOutRoomsReaction(reaction, user, mode) {
 		
 		reaction.message.guild.channels.create(nickname, {
 			type: 'voice',
-			parent: reaction.message.guild.channels.cache
-				.find(ch => cie(ch.name, groupName)),
+			parent: parentChannel,
 			permissionOverwrites: [
 				{
 					id: reaction.message.guild.roles.cache
@@ -1776,12 +1782,15 @@ function breakOutRoomsReaction(reaction, user, mode) {
 		// mode = false
 	
 		member.roles.remove(groupRole);
-			
+
 		channel = reaction.message.guild.channels.cache
-			.find(ch => cie(ch.name, nickname));
+			.find(ch => ch.parent != undefined && ch.parent == parentChannel &&
+				cie(ch.name, nickname));
 		
 		if (channel != undefined) {
-			channel.delete();
+			channel.delete().then(() => {
+				console.log('Kanál ' + channel.name + ' smazán');				
+			});
 		}
 	}
 }
@@ -1820,7 +1829,6 @@ function support(msg, params) {
 async function log(msg) {
 	// console.log('log');
 	
-	console.log('log');
 }
 
 
