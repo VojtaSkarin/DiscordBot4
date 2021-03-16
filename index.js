@@ -236,7 +236,7 @@ client.on('messageReactionRemove', (reaction, user) => {
 });
 
 function cie(a, b) {
-	console.log('Porovnávání `' + a + '` a `' + b + '`');
+	// console.log('Porovnávání `' + a + '` a `' + b + '`');
 	return a.toLowerCase() == b.toLowerCase();
 }
 
