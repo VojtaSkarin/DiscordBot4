@@ -1061,6 +1061,17 @@ async function module(msg, params) {
 					msg.channel.send('Oddíl ' + params[2] + ' neexistuje');
 				}
 			}
+		
+		} else if (cie(params[1], 'add category')) {
+		// !module add_category
+		
+			if (params.length != 3) {
+				msg.channel.send('Špatný počet argumentů');
+				return;
+			}
+			
+			fs.mkdir(emoji_dir + '/' + params[2], () => {});
+		
 		} else if (params[1] == 'add') {
 		// !module add
 			
