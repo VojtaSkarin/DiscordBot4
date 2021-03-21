@@ -371,11 +371,12 @@ hint.set('imback', '!imback' +
 			'\n\t\t\t[red green blue] - barva role v RGB,' +
 			'\n\t\t\t\tnáhodná barva, pokud vynecháno' +
 			'\n\t\tremove - smaže roli [game]Player');*/
-hint.set('module', '!m[odule] [list|add|show|new] <param>' +
+hint.set('module', '!m[odule] [list|add|new_category|show|new] <param>' +
 			'\n\tSlouží k načítání a přidávání emoji. Emoji v databázi lze načíst pomocí !module add; emoji jež v databázi není lze do databáze přidat pomocí !module new. Náš server má limit 50 emoji. Jelikož emotů používáme víc (teď cca 80), je potřeba mezi aktivními emoji *přepínat* (načítat neaktivní emoji). Pokud tedy chci použít emoji, které právě není *aktivní*, musím si v seznamu najít jeho jméno a pak jej *přidat* příkazem add.' +
 			'\n\t\tlist <oddíl> - vypíše seznam oddílů' +
 			'\n\t\t\toddíl - pokud je zadáno, vypíše seznam emoji v oddílu' +
 			'\n\t\tadd [emoji] - načte emoji [emoji], které je již v databázi' +
+			'\n\t\tnew_category [category] - vytvoří novou kategorii emoji [category]' +
 			'\n\t\tshow [emoji] - zobrazí emoji [emoji]' +
 			'\n\t\tnew [oddíl] [name] - z obrázku přiloženého ke zprávě vytvoří nové emoji s názvem [name] v oddílu [oddíl] a přidá jej do databáze; pro použití musí být nasledně toto emoji explicitně načteno' +
 			'\n\tPříklady:' +
@@ -1062,8 +1063,8 @@ async function module(msg, params) {
 				}
 			}
 		
-		} else if (cie(params[1], 'add category')) {
-		// !module add_category
+		} else if (cie(params[1], 'new category')) {
+		// !module new_category
 		
 			if (params.length != 3) {
 				msg.channel.send('Špatný počet argumentů');
