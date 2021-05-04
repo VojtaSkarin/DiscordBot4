@@ -196,16 +196,19 @@ client.once('ready', () => {
 		
 		// Někdo se přidal ke !game
 		if (reaction.message.content.includes('Ve své ponížené maličkosti si vás dovoluji uctivě požádat, abyste milostivě račili přijít')) {
-			message = new Map([
+			dictionary = new Map([
 				['Yes', ' to jde rozjet!'],
 				['⛔', ' na to dlabe'],
 				['🕑', ' má teď napilno']
 			]);
-			msg = reaction.message;
-			reactName = reaction.emoji.name;
-			author = msg.mentions.users.first();
-			msg.channel.send(author.toString() + ' ' +
-				reaction.users.cache.last().toString() + message.get(reactName));
+			
+			if (dictionary.has(reaction.emoji.name)) {
+				msg = reaction.message;
+				reactName = reaction.emoji.name;
+				author = msg.mentions.users.first();
+				msg.channel.send(author.toString() + ' ' +
+					reaction.users.cache.last().toString() + dictionary.get(reactName));
+			}
 		}
 	});
 	
@@ -819,6 +822,16 @@ function whatsnew(msg, params) {
 	msg.delete().then(() =>
 	{
 		function last() {
+			msg.channel.send('**WhatsNew v .2.20**' +
+			'\n\t__Bug fixes__' +
+			'\n\t\t:bulb: !game už funguje, i když je přidána nová reakce');
+		}
+		
+		if (params.length == 1) {
+			last();
+		} else if (params.length == 2 && params[1] == 'all') {
+			last();
+			
 			msg.channel.send('**WhatsNew v .2.19**' +
 			'\n\t__Major changes__' +
 			'\n\t\t⚡ Přidáno !support' +
@@ -826,12 +839,6 @@ function whatsnew(msg, params) {
 			'\n\t\t⛏ Přidáno !access update' +
 			'\n\t__Bug fixes__' +
 			'\n\t\t:bulb: Opraveno !access add_room');
-		}
-		
-		if (params.length == 1) {
-			last();
-		} else if (params.length == 2 && params[1] == 'all') {
-			last();
 			
 			function last() {
 			msg.channel.send('**WhatsNew v .2.18**' +
