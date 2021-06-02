@@ -432,7 +432,7 @@ hint.set('subject', '*nevolá se příkazem*' +
 					' Pro přidání nebo odebrání předmětu je třeba zakliknout odpovídající' +
 					' reakci na příspěvku se seznamem předmětů.');
 hint.set('support', '!support' +
-					'\n\tZobrazí místnost všem IT Studentům.' +
+					'\n\tNa 3 hodiny (tedy dočasně) zobrazí místnost všem IT Studentům.' +
 					'\n\tPříklady:' +
 					'\n\t\tPíšu zkoušku a potřebuji pomoc ostatních' +
 					'\n\t\t\t!support')
@@ -1842,7 +1842,7 @@ function support(msg, params) {
 				'VIEW_CHANNEL'        : null,
 			}
 		);
-	}, 2 * 60 * 60 * 1000); // 2 h
+	}, 3 * 60 * 60 * 1000); // 2 h
 }
 
 async function log(msg) {
