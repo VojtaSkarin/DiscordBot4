@@ -996,7 +996,7 @@ async function module(msg, params) {
 		['ž', 'z']
 	]);
 	
-	permanent = ['Yes', 'Tarded', 'Kekw', 'CringeHarold', 'KingPepega'];
+	permanent = ['Yes', 'Tarded', 'Kekw', 'CringeHarold', 'KingPepega', 'SadKek'];
 	
 	function unifyName(name) {
 		lower = name.toLowerCase();
