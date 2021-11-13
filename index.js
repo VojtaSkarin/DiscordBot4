@@ -318,7 +318,7 @@ hint.set('access', '!access [option] [params]*' +
 				   '\n\tSpráva výběru místností. Místnosti se nepřidávají tímto příkazem, ale reakcí v odpovídajícím kanále.' +
 				   '\n\t\toption - list_categories|add_subcategory|add_room|remove_room|new_category|delete_category|send_table' +
 				   '\n\t\t\tlist_categories - vypíše seznam monitorovaných kategorií' +
-				   '\n\t\t\tadd_subcategory [podkategorie] [jméno] - vytvoří podkategorii [jméno] v kategorii [kategorie]' +
+				   '\n\t\t\tadd_subcategory [podkategorie] [zkratka] [jméno] - vytvoří podkategorii [jméno] se zkratkou [zkratka] v kategorii [kategorie]' +
 				   '\n\t\t\tadd_room [kategorie] <podkategorie> [kanál] - vytvoří místnost [kanál] v kategorii [kategorie] a podkategorii <podkategorie>, pokud není podkategorie zadána, použijí se jako podkategorie první dva znaky z názvu místnosti' +
 				   '\n\t\t\tremove_room [kategorie] [kanál] - smaže místnost [kanál] v kategorii [kategorie]' +
 				   '\n\t\t\tnew_category [kanál] - přidá místnost [kanál] mezi monitorované kanály' +
@@ -328,11 +328,11 @@ hint.set('access', '!access [option] [params]*' +
 				   '\n\tChci vytvořit kategorii škola' +
 				   '\n\t\t!access new_category škola' +
 				   '\n\tChci vytvořit podkategorii \'Pokročilé informatické předměty\' (kódy IA)' +
-				   '\n\t\t!access add_subcategory ia pokročilé_informatické_předměty' +
+				   '\n\t\t!access add_subcategory škola ia pokročilé_informatické_předměty' +
 				   '\n\tChci vytvořit kanál pb156-sítě v kategorii pb' +
-				   '\n\t\t!access add_room pb156-sítě' +
+				   '\n\t\t!access add_room škola pb pb156-sítě' +
 				   '\n\tChci vytovřit kanál kurs-vaření v kategorii ostatní' +
-				   '\n\t\t!access add_room ostatní kurs-vaření');
+				   '\n\t\t!access add_room škola ostatní kurs-vaření');
 hint.set('clear', '!c[lear] n|all' +
 			'\n\tMaže zprávy' +
 			'\n\t\tn - počet zpráv ke smazání,' +
