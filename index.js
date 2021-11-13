@@ -156,17 +156,49 @@ client.once('ready', () => {
 	});
 	
 	client.on('voiceStateUpdate', (oldState, newState) => {
-		role = newState.guild.roles.cache.find(role =>
-			role.name == 'Člen hlasového kanálu');
-		/* bude se mazat
 		if (oldState.channel == null) {
-			// Připojil se k hlasovému kanálu
-			oldState.member.roles.add(role);
+			// Připojil se po tom, co nebyl v žádném kanále
+			// => nemá oprávnění a potřebuje ho dostat
+			
+			console.log(newState.member.nickname + ' se připojil do hlasového kanálu ' + newState.channel.name);
+			
+			member = newState.member;
+			textChannel = newState.guild.channels.cache.find(ch => cie(ch.name, 'voice-channel-chat'));
+			
+			textChannel.updateOverwrite(
+				member,
+				{
+					'ADD_REACTIONS'       : true,
+					'ATTACH_FILES'        : true,
+					'EMBED_LINKS'         : true,
+					'MENTION_EVERYONE'    : true,
+					'READ_MESSAGE_HISTORY': true,
+					'SEND_MESSAGES'       : true,
+					'VIEW_CHANNEL'        : true,
+				}
+			);
 		} else if (newState.channel == null) {
-			// Odpojil se z hlasového kanálu
-			oldState.member.roles.remove(role);
+			// Odpojil se po tom, co byl v nějakém kanále
+			// => má oprávnění a má o něj přijít
+			
+			console.log(newState.member.nickname + ' se odpojil z hlasového kanálu ' + oldState.channel.name);
+			
+			member = newState.member;
+			textChannel = newState.guild.channels.cache.find(ch => cie(ch.name, 'voice-channel-chat'));
+			
+			textChannel.updateOverwrite(
+				member,
+				{
+					'ADD_REACTIONS'       : false,
+					'ATTACH_FILES'        : false,
+					'EMBED_LINKS'         : false,
+					'MENTION_EVERYONE'    : false,
+					'READ_MESSAGE_HISTORY': false,
+					'SEND_MESSAGES'       : false,
+					'VIEW_CHANNEL'        : false,
+				}
+			);
 		}
-		*/
 	});
 	
 	client.on('messageReactionAdd', (reaction, user) => {
@@ -315,23 +347,39 @@ function plesk(msg) {
 
 hint = new Map();
 hint.set('access', '!access [option] [params]*' +
+
 				   '\n\tSpráva výběru místností. Místnosti se nepřidávají tímto příkazem, ale reakcí v odpovídajícím kanále.' +
-				   '\n\t\toption - list_categories|add_subcategory|add_room|remove_room|new_category|delete_category|send_table' +
+				   
+				   '\n\t\toption - list_categories|new_category|delete_category|add_subcategory|remove_subcategory|add_room|remove_room|send_table' +
+				   
 				   '\n\t\t\tlist_categories - vypíše seznam monitorovaných kategorií' +
-				   '\n\t\t\tadd_subcategory [podkategorie] [zkratka] [jméno] - vytvoří podkategorii [jméno] se zkratkou [zkratka] v kategorii [kategorie]' +
-				   '\n\t\t\tadd_room [kategorie] <podkategorie> [kanál] - vytvoří místnost [kanál] v kategorii [kategorie] a podkategorii <podkategorie>, pokud není podkategorie zadána, použijí se jako podkategorie první dva znaky z názvu místnosti' +
-				   '\n\t\t\tremove_room [kategorie] [kanál] - smaže místnost [kanál] v kategorii [kategorie]' +
+				   
 				   '\n\t\t\tnew_category [kanál] - přidá místnost [kanál] mezi monitorované kanály' +
+				   
 				   '\n\t\t\tdelete_category - není implementováno' +
+				   
+				   '\n\t\t\tadd_subcategory [kategorie] [podkategorie] [zkratka] [jméno] - vytvoří podkategorii [jméno] se zkratkou [zkratka] v kategorii [kategorie]' +
+				   '\n\t\t\tremove_subcategory [kategorie] [zkratka] - smaže podkategorii se zkratkou [zkratka] v kategorii [kategorie]' +
+				   
+				   '\n\t\t\tadd_room [kategorie] <podkategorie> [kanál] - vytvoří místnost [kanál] v kategorii [kategorie] a podkategorii <podkategorie>, pokud není podkategorie zadána, použijí se jako podkategorie první dva znaky z názvu místnosti' +
+				   
+				   '\n\t\t\tremove_room [kategorie] [kanál] - smaže místnost [kanál] v kategorii [kategorie]' +
+				   
 				   '\n\t\t\tsend_table [kanál] - smaže místnost [kanál] a vloží do něj tabulku pro výběr předmětů' +
 				   '\n\tPříklady:' +
 				   '\n\tChci vytvořit kategorii škola' +
 				   '\n\t\t!access new_category škola' +
-				   '\n\tChci vytvořit podkategorii \'Pokročilé informatické předměty\' (kódy IA)' +
+				   
+				   '\n\tChci vytvořit podkategorii \'Pokročilé informatické předměty\' (kód IA) v kategorii škola' +
 				   '\n\t\t!access add_subcategory škola ia pokročilé_informatické_předměty' +
+				   
+				   '\n\tChci smazat podkategorii \'Špatná podkategorie\' (kód XD) v kategorii škola' +
+				   '\n\t\t!access remove_subcategory škola xd' +
+				   
 				   '\n\tChci vytvořit kanál pb156-sítě v kategorii pb' +
 				   '\n\t\t!access add_room škola pb pb156-sítě' +
-				   '\n\tChci vytovřit kanál kurs-vaření v kategorii ostatní' +
+				   
+				   '\n\tChci vytvořit kanál kurs-vaření v kategorii ostatní' +
 				   '\n\t\t!access add_room škola ostatní kurs-vaření');
 hint.set('clear', '!c[lear] n|all' +
 			'\n\tMaže zprávy' +
@@ -1390,18 +1438,23 @@ function access(msg, params) {
 			// !access add_subcategory 'category' 'code' 'subcategory'
 			
 			if (params.length != 5) {
-				msg.channel.send('Špatný počet argumentů');
+				msg.channel.send('Špatný počet argumentů' + '\nSprávná syntaxe je !access add_subcategory \'category\' \'code\' \'category\'');
 				return;
 			}
 			
-			category = params[2]
+			categoryName = params[2]
 			code = params[3];
 			subcategory = params[4]
 			
-			channel = msg.guild.channels.cache.filter(ch => ch.name.startsWith('výběr'))
-				.find(ch => cie(ch.parent.name, category));
+			choiceChannel = msg.guild.channels.cache.filter(ch => ch.name.startsWith('výběr'))
+				.find(ch => cie(ch.parent.name, categoryName));
+				
+			if (choiceChannel == undefined) {
+				msg.channel.send('Kategorie ' + categoryName + ' neexistuje');
+				return;
+			}
 			
-			channel.send('**' + code.toUpperCase() + ': ' +
+			choiceChannel.send('**' + code.toUpperCase() + ': ' +
 				subcategory[0].toUpperCase() +
 				subcategory.slice(1).replace(/-/g, ' ') + '**');
 			
@@ -1409,7 +1462,7 @@ function access(msg, params) {
 			// !access add_room 'category' <subcategory> 'name'
 			
 			if (params.length != 4 && params.length != 5) {
-				msg.channel.send('Špatný počet argumentů');
+				msg.channel.send('Špatný počet argumentů' + '\nSprávná syntaxe je !access add_toom \'category\' \'subcategory_code\' \'name\'');
 				return;
 			}
 			
@@ -1471,6 +1524,34 @@ function access(msg, params) {
 			
 			update(msg, category, subcategory);
 		
+		} else if (cie(params[1], 'remove subcategory')) {
+			// !access remove_subcategory 'category' 'code'
+			
+			if (params.length != 4) {
+				msg.channel.send('Špatný počet argumentů' +
+				'\nSprávná syntaxe je !access remove_subcategory \'category\' \'code\'');
+				return
+			}
+			
+			categoryName = params[2];
+			subcategoryCode = params[3];
+			
+			choiceChannel = msg.guild.channels.cache.find(ch => ch.name.startsWith('výběr') && ch.parent != undefined && cie(ch.parent.name, categoryName));
+			
+			if (choiceChannel == undefined) {
+				msg.channel.send('Kategorie ' + categoryName + ' neexistuje');
+				return;
+			}
+			
+			msgToDelete = choiceChannel.messages.cache.find(m => m.content.startsWith('**' + subcategoryCode.toUpperCase()));
+			
+			if (msgToDelete == undefined) {
+				msg.channel.send('Podkategorie s kódem ' + subcategoryCode + ' neexistuje');
+				return;
+			}
+			
+			msgToDelete.delete();
+			
 		} else if (cie(params[1], 'remove room')) {
 			// !access remove_room 'category' 'name'
 			
@@ -1845,20 +1926,8 @@ function support(msg, params) {
 	}, 3 * 60 * 60 * 1000); // 2 h
 }
 
-async function log(msg) {
-	// console.log('log');
-	
-	channels = msg.guild.channels.cache
-		.filter(ch => ch.parent != null && cie(ch.parent.name, 'skupina 15'))
-		.filter(ch => cie(ch.name, 'romana mihalovičová'))
-		.array();//.each(ch => console.log(ch.name));
-	
-	console.log(channels.length);
-	
-	for (i = 1; i < channels.length; i++) {
-		console.log(channels[i].name);
-		channels[i].delete();
-	}
+function log(msg) {
+	console.log('log');
 }
 
 
