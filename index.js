@@ -160,7 +160,7 @@ client.once('ready', () => {
 			// Připojil se po tom, co nebyl v žádném kanále
 			// => nemá oprávnění a potřebuje ho dostat
 			
-			console.log(newState.member.nickname + ' se připojil do hlasového kanálu ' + newState.channel.name);
+			console.log(newState.member.nickname + ' se připojil do hlasového kanálu ' + newState.channel?.name ?? 'null channel');
 			
 			member = newState.member;
 			textChannel = newState.guild.channels.cache.find(ch => cie(ch.name, 'voice-channel-chat'));
