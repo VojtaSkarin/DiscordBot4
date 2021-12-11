@@ -187,10 +187,14 @@ client.once('ready', () => {
 			// Odpojil se po tom, co byl v nějakém kanále
 			// => má oprávnění a má o něj přijít
 			
-			console.log(newState.member.nickname + ' se odpojil z hlasového kanálu ' + oldState.channel.name);
+			console.log(newState.member.displayName + ' se odpojil z hlasového kanálu ' + oldState.channel.name);
 			
 			member = newState.member;
 			textChannel = newState.guild.channels.cache.find(ch => cie(ch.name, 'voice-channel-chat'));
+			
+			if (textChannel == undefined) {
+				return;
+			}
 			
 			textChannel.updateOverwrite(
 				member,
