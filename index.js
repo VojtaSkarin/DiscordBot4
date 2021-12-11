@@ -162,10 +162,14 @@ client.once('ready', () => {
 			
 			newChannelName = newState.channel != null ? newState.channel.name : 'null channel';
 			
-			console.log(newState.member.nickname + ' se připojil do hlasového kanálu ' + newChannelName);
+			console.log(newState.member.displayName + ' se připojil do hlasového kanálu ' + newChannelName);
 			
 			member = newState.member;
 			textChannel = newState.guild.channels.cache.find(ch => cie(ch.name, 'voice-channel-chat'));
+			
+			if (textChannel == undefined) {
+				return;
+			}
 			
 			textChannel.updateOverwrite(
 				member,
