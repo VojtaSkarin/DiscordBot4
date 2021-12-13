@@ -168,6 +168,7 @@ client.once('ready', () => {
 			textChannel = newState.guild.channels.cache.find(ch => cie(ch.name, 'voice-channel-chat'));
 			
 			if (textChannel == undefined) {
+				console.log('voice-channel-chat neexistuje');
 				return;
 			}
 			
@@ -193,6 +194,7 @@ client.once('ready', () => {
 			textChannel = newState.guild.channels.cache.find(ch => cie(ch.name, 'voice-channel-chat'));
 			
 			if (textChannel == undefined) {
+				console.log('voice-channel-chat neexistuje');
 				return;
 			}
 			
@@ -1383,19 +1385,14 @@ function access(msg, params) {
 	};
 	
 	function update(msg, category, subcategory) {
-		channel = msg.guild.channels.cache.find(ch => {
-			return ch.name.startsWith('výběr') && cie(category, ch.parent.name);
-		});
+		channel = msg.guild.channels.cache.find(ch => ch.name.startsWith('výběr') && ch.parent != undefined && cie(category, ch.parent.name));
 		
 		if (channel == undefined) {
 			msg.channel.send('Kategorie `' + category + '` neexistuje');
 			return;
 		}
 		
-		message = channel.messages.cache.find(m => {
-			return m.content.substring(2).toLowerCase()
-				.startsWith(subcategory.toLowerCase());
-		});
+		message = channel.messages.cache.find(m => m.content.substring(2).toLowerCase().startsWith(subcategory.toLowerCase()));
 		
 		if (message == undefined) {
 			msg.channel.send('Podkategorie `' + subcategory + '` neexistuje');
@@ -1406,7 +1403,6 @@ function access(msg, params) {
 			.filter(ch => ch.parent != null)
 			.filter(ch => cie(ch.parent.name, category))
 			.filter(ch => ! ch.name.toLowerCase().startsWith('výběr'))
-			.filter(ch => cie(ch.topic, subcategory))
 			.map(ch => ch.name)
 			.sort();
 			
@@ -1563,9 +1559,9 @@ function access(msg, params) {
 			msgToDelete.delete();
 			
 		} else if (cie(params[1], 'remove room')) {
-			// !access remove_room 'category' 'name'
+			// !access remove_room 'category' 'subcategory' 'name'
 			
-			if (params.length != 4) {
+			if (params.length != 5) {
 				msg.channel.send('Špatný počet argumentů');
 				return;
 			}
@@ -1573,22 +1569,17 @@ function access(msg, params) {
 			console.log('!access remove_room');
 			
 			category = params[2];
-			name = params[3];
+			subcategory = params[3];
+			name = params[4];
 			
-			channel = msg.guild.channels.cache.find(ch => {
-				return ch.name.startsWith('výběr') && ch.parent != undefined &&
-					cie(category, ch.parent.name);
-			});
+			channel = msg.guild.channels.cache.find(ch => ch.name.startsWith('výběr') && ch.parent != undefined && cie(category, ch.parent.name));
 		
 			if (channel == undefined) {
 				msg.channel.send('Kategorie `' + category + '` neexistuje');
 				return;
 			}
 			
-			message = channel.messages.cache.find(m => {
-				return m.content.substring(2).toLowerCase()
-					.startsWith(subcategory.toLowerCase());
-			});
+			message = channel.messages.cache.find(m => m.content.substring(2).toLowerCase().startsWith(subcategory.toLowerCase()));
 		
 			if (message == undefined) {
 				msg.channel.send('Podkategorie `' + subcategory + '` neexistuje');
@@ -1715,50 +1706,38 @@ function access_reaction(reaction, user, mode) {
 	emoji = reaction.emoji.toString();
 	
 	rows = reaction.message.content.split('\n\t').slice(1);
-	row = rows.find(row => {
-		return row.split(' ')[0] == emoji;
-	});	
+	row = rows.find(row => row.startsWith(emoji));
 	
 	if (row == undefined) { // reakce navíc
 		console.log('zadána reakci, pro kterou neexistuje místnost');
 		return;
 	}
 	
-	index = row.indexOf('`');
+	startIndex = row.indexOf('`');
+	endIndex = row.indexOf('`', startIndex + 1);
 	
-	channelCode = row.substring(index + 1, index + 6).toLowerCase()
-		.replace(' ', '-');
+	channelName = row.substring(startIndex + 1, endIndex).toLowerCase()
+		.replaceAll(' ', '-');
 	channel = reaction.message.guild.channels.cache.find(ch =>
-		ch.name.startsWith(channelCode));
+		cie(ch.name, channelName));
 		
 	if (channel == undefined) {
-		console.log('Kanál s kódem `' + channelCode + '` neexistuje, ale je ve výběru');
+		console.log('Kanál s kódem `' + channelName + '` neexistuje, ale je ve výběru');
 		return;
 	}
-		
-	if (mode) {
-		channel.updateOverwrite(user,
-		{
-			'ADD_REACTIONS'       : true,
-			'ATTACH_FILES'        : true,
-			'EMBED_LINKS'         : true,
-			'MENTION_EVERYONE'    : true,
-			'READ_MESSAGE_HISTORY': true,
-			'SEND_MESSAGES'       : true,
-			'VIEW_CHANNEL'        : true,
-		});
-	} else {
-		channel.updateOverwrite(user,
-		{
-			'ADD_REACTIONS'       : null,
-			'ATTACH_FILES'        : null,
-			'EMBED_LINKS'         : null,
-			'MENTION_EVERYONE'    : null,
-			'READ_MESSAGE_HISTORY': null,
-			'SEND_MESSAGES'       : null,
-			'VIEW_CHANNEL'        : null
-		});
-	}
+	
+	value = mode ? true : null;
+	
+	channel.updateOverwrite(user,
+	{
+		'ADD_REACTIONS'       : value,
+		'ATTACH_FILES'        : value,
+		'EMBED_LINKS'         : value,
+		'MENTION_EVERYONE'    : value,
+		'READ_MESSAGE_HISTORY': value,
+		'SEND_MESSAGES'       : value,
+		'VIEW_CHANNEL'        : value,
+	});
 }
 
 function imback(msg, params) {
@@ -1937,7 +1916,10 @@ function support(msg, params) {
 }
 
 function log(msg) {
-	console.log('log');
+	channel = msg.guild.channels.cache.find(ch => ch.name == 'výběr-her');
+	message = channel.messages.cache.first();
+	console.log(message);
+	message.edit('**DH: Dostupné hry**');
 }
 
 
