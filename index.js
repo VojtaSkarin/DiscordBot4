@@ -1714,8 +1714,7 @@ function access_reaction(reaction, user, mode) {
 	startIndex = row.indexOf('`');
 	endIndex = row.indexOf('`', startIndex + 1);
 	
-	channelName = row.substring(startIndex + 1, endIndex).toLowerCase()
-		.replaceAll(' ', '-');
+	channelName = row.substring(startIndex + 1, endIndex).toLowerCase().replaceAll(' ', '-');
 	channel = reaction.message.guild.channels.cache.find(ch =>
 		cie(ch.name, channelName));
 		
