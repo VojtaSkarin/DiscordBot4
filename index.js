@@ -156,13 +156,11 @@ client.once('ready', () => {
 	});
 	
 	client.on('voiceStateUpdate', (oldState, newState) => {
-		if (oldState.channel == null) {
+		if (oldState.channel == null && newState.channel != null) {
 			// Připojil se po tom, co nebyl v žádném kanále
 			// => nemá oprávnění a potřebuje ho dostat
 			
-			newChannelName = newState.channel != null ? newState.channel.name : 'null channel';
-			
-			console.log(newState.member.displayName + ' se připojil do hlasového kanálu ' + newChannelName);
+			console.log(newState.member.displayName + ' se připojil do hlasového kanálu ' + newState.channel.name);
 			
 			member = newState.member;
 			textChannel = newState.guild.channels.cache.find(ch => cie(ch.name, 'voice-channel-chat'));
