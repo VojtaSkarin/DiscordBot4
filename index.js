@@ -182,7 +182,7 @@ client.once('ready', () => {
 					'VIEW_CHANNEL'        : true,
 				}
 			);
-		} else if (newState.channel == null) {
+		} else if (oldState.channel != null && newState.channel == null) {
 			// Odpojil se po tom, co byl v nějakém kanále
 			// => má oprávnění a má o něj přijít
 			
