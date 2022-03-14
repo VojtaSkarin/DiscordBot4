@@ -1,9 +1,42 @@
+var subject = require('./commands/subject');
+var whatsnew = require('./commands/whatsnew');
+
+// Require the necessary discord.js classes
+const { Client, Intents } = require('discord.js');
+const { clientId, guildId, token } = require('./config.json');
+
+// Create a new client instance
+const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
+
+// When the client is ready, run this code (only once)
+client.once('ready', () => {
+	console.log('Ready!');
+});
+
+client.on('interactionCreate', async interaction => {
+	if (!interaction.isCommand()) {
+		return;
+	}
+
+	const commandName = interaction.commandName;
+
+	if (commandName === 'subject') {
+		await subject.subject(interaction);
+	} else if (commandName === 'whatsnew') {
+		await whatsnew.whatsnew(interaction);
+	}
+});
+
+// Login to Discord with your client's token
+client.login(token);
+
+/*
 // npm install discord.js ffmpeg fluent-ffmpeg @discordjs/opus ytdl-core --save
 
 // require the discord.js module
 const Discord = require('discord.js');
 // require ytdl module
-const ytdl = require('ytdl-core');
+//const ytdl = require('ytdl-core');
 // require http module
 const https = require('https');
 
@@ -432,7 +465,7 @@ hint.set('imback', '!imback' +
 			'\n\t\t\t[red green blue] - barva role v RGB,' +
 			'\n\t\t\t\tnáhodná barva, pokud vynecháno' +
 			'\n\t\tremove - smaže roli [game]Player');*/
-hint.set('module', '!m[odule] [list|add|new_category|show|new] <param>' +
+/*hint.set('module', '!m[odule] [list|add|new_category|show|new] <param>' +
 			'\n\tSlouží k načítání a přidávání emoji. Emoji v databázi lze načíst pomocí !module add; emoji jež v databázi není lze do databáze přidat pomocí !module new. Náš server má limit 50 emoji. Jelikož emotů používáme víc (teď cca 80), je potřeba mezi aktivními emoji *přepínat* (načítat neaktivní emoji). Pokud tedy chci použít emoji, které právě není *aktivní*, musím si v seznamu najít jeho jméno a pak jej *přidat* příkazem add.' +
 			'\n\t\tlist <oddíl> - vypíše seznam oddílů' +
 			'\n\t\t\toddíl - pokud je zadáno, vypíše seznam emoji v oddílu' +
@@ -794,7 +827,7 @@ async function newstyle(msg, params) {
 		/*if (playing) {
 			await dispatcher.end();
 		}*/
-		
+		/*
 		console.log('Connecting');
 		playing = true;
 		channel = msg.guild.channels.cache.find(channel =>
@@ -819,7 +852,7 @@ async function newstyle(msg, params) {
 							console.log('Finished');
 							connection.disconnect();
 							playing = false;
-						});*/
+						});*//*
 					});
 		});
 	}
@@ -1694,7 +1727,7 @@ function access_reaction(reaction, user, mode) {
 	/* mode
 		true  - reactionAdd
 		false - reactionRemove
-	*/
+	*//*
 	
 	if (! reaction.message.channel.name.startsWith('výběr')) {
 		// je to breakout
@@ -1785,7 +1818,7 @@ function breakOutRoomsReaction(reaction, user, mode) {
 	/* mode
 		true  - reactionAdd
 		false - reactionRemove
-	*/
+	*//*
 	
 	if (! reaction.message.channel.name.startsWith('breakoutrooms')) {
 		// Reakce se netýká breakoutrooms
@@ -1917,7 +1950,7 @@ function log(msg) {
 	message = channel.messages.cache.first();
 	console.log(message);
 	message.edit('**DH: Dostupné hry**');
-}
+}*/
 
 
 

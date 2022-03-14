@@ -1,8 +1,2 @@
-# Ignore everything
-*
-
-# Unignore self
-!.gitignore
-
-# Unignore source file
-!index.js
+# Ignore config.js
+config.json
