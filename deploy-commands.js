@@ -6,14 +6,26 @@ const { clientId, guildId, token } = require('./config.json');
 const commands = [
 	new SlashCommandBuilder()
 		.setName('subject')
-		.setDescription('Spravuje předmětové místnosti'),
+		.setDescription('Slouží pro správu předmětových místností')
+		.addStringOption(option =>
+			option.setName('action')
+				  .setDescription('Typ akce')
+				  .setRequired(true)
+				  .addChoice('join', 'join')
+				  .addChoice('leave', 'leave')
+				  .addChoice('create', 'create')
+				  .addChoice('delete', 'delete'))
+		.addStringOption(option =>
+			option.setName('channel')
+				  .setDescription('Kýžený kanál')
+				  .setRequired(true)),
 		
-	new SlashCommandBuilder()
+/*	new SlashCommandBuilder()
 		.setName('whatsnew')
 		.setDescription('Vypisuje seznam změn')
 		.addStringOption(option =>
 			option.setName('input')
-			.setDescription('\'last\' pro nejnovější a \'all\' pro všechny')),
+			.setDescription('\'last\' pro nejnovější a \'all\' pro všechny')),*/
 ]
 	.map(command => command.toJSON());
 

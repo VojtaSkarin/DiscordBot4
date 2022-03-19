@@ -22,6 +22,7 @@ client.on('interactionCreate', async interaction => {
 
 	if (commandName === 'subject') {
 		await subject.subject(interaction);
+		
 	} else if (commandName === 'whatsnew') {
 		await whatsnew.whatsnew(interaction);
 	}
